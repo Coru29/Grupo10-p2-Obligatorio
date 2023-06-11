@@ -6,7 +6,6 @@ import Entidades.*;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,6 +14,7 @@ import java.io.IOException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +51,6 @@ public class CSVReader {
     public static void topPilotos(int mesInput, int anoInput){
 
         // ----------  ----------  esto es para leer los pilotos del .txt  ----------  ----------
-        // Crear tu tabla hash para llevar la cuenta de las menciones de cada piloto
         LinearProbingHashTable<String, Integer> contadorPilotos = new LinearProbingHashTable<>();
 
         String archivo = "/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/drivers.txt";
@@ -192,7 +191,7 @@ public class CSVReader {
                 int tweets = entry.getValue();
                 heapPrueba.insert(user,tweets);
 
-                System.out.println("Usuario: " + user.getName() + ", Cantidad de Tweets: " + tweets + ", Verificado: " + user.getVerificado() );
+//                System.out.println("Usuario: " + user.getName() + ", Cantidad de Tweets: " + tweets + ", Verificado: " + user.getVerificado() );
             }
 
 
@@ -204,7 +203,7 @@ public class CSVReader {
             for (int i = 0; i < 15; i++) {   //el coso esta al reves!!!!!
                 System.out.println(i +1 +"." + aver.get(i).getName() + "Cantidad de Tweets: " + heapPrueba.find(aver.get(i)) + " verificado: " + aver.get(i).getVerificado());
             }
-//            System.out.println("cantidad de usuarios: "+contUsuarios);
+            System.out.println("cantidad de usuarios: "+contUsuarios);
 
 
         } catch (IOException e) {
@@ -230,11 +229,15 @@ public class CSVReader {
                 String[] hashtagsParts = hashtags.split(",");
 
                 for (String parteHashtag : hashtagsParts) {
+                    // le saco los corchetes
                     String parteHashSinCorcheteIzq = parteHashtag.replace("[", "");
                     String parteHashSinCorcheteDer = parteHashSinCorcheteIzq.replace("]", "");
 
+                    // le saco las comillas simples y los espacios
+                    String hashTagLimpio = parteHashSinCorcheteDer.replace("'", " ");
+                    String hasTagReLimpio = hashTagLimpio.replace(" ", "");
 
-                    HashTag hashTagIndividual = new HashTag(parteHashSinCorcheteDer);
+                    HashTag hashTagIndividual = new HashTag(hasTagReLimpio);
 
                     if (!hashTagsReg.contains(hashTagIndividual) && date.contains(fecha)){ //en el caso que no este registrado
                         hashTagsReg.put(hashTagIndividual,1);
