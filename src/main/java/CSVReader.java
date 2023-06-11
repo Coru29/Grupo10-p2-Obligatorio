@@ -192,7 +192,7 @@ public class CSVReader {
                 int tweets = entry.getValue();
                 heapPrueba.insert(user,tweets);
 
-//                System.out.println("Usuario: " + user.getName() + ", Cantidad de Tweets: " + tweets + ", Verificado: " + user.getVerificado() );
+                System.out.println("Usuario: " + user.getName() + ", Cantidad de Tweets: " + tweets + ", Verificado: " + user.getVerificado() );
             }
 
 
@@ -207,12 +207,63 @@ public class CSVReader {
 //            System.out.println("cantidad de usuarios: "+contUsuarios);
 
 
-
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
+
+    // ----------  ----------  Tercera funcion ----------  ----------
+    public static void hashtagDistintos (String fecha){
+        try {
+            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset_test.csv");
+            Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+
+
+            LinearProbingHashTable<HashTag, Integer> hashTagsReg = new LinearProbingHashTable<>();
+
+            for (CSVRecord record : records) {
+                String date = record.get("date");
+                String hashtags = record.get("hashtags");
+
+
+                String[] hashtagsParts = hashtags.split(",");
+
+                for (String parteHashtag : hashtagsParts) {
+                    String parteHashSinCorcheteIzq = parteHashtag.replace("[", "");
+                    String parteHashSinCorcheteDer = parteHashSinCorcheteIzq.replace("]", "");
+
+
+                    HashTag hashTagIndividual = new HashTag(parteHashSinCorcheteDer);
+
+                    if (!hashTagsReg.contains(hashTagIndividual) && date.contains(fecha)){ //en el caso que no este registrado
+                        hashTagsReg.put(hashTagIndividual,1);
+                    }else if (hashTagsReg.contains(hashTagIndividual) && date.contains(fecha)){ //en el caso q ya este registrado
+                        hashTagsReg.put(hashTagIndividual, hashTagsReg.get(hashTagIndividual) +1);
+                    }
+
+                }
+
+            }
+
+            int contHashtags = 0;
+
+            for (Entry<HashTag, Integer> entry : hashTagsReg.getEntries()){
+                contHashtags ++;
+                System.out.println(entry.getKey().getText());
+            }
+
+            System.out.println("Cantidad de hashtags: " + contHashtags);
+
+
+
+
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

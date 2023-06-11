@@ -40,6 +40,7 @@ public class Menu {
                     System.out.println("Ingrese la fecha (en formato YYYY-MM-DD):");
                     String fecha = scanner.next();
                     // la función para mostrar la cantidad de hashtags distintos
+                    CSVReader.hashtagDistintos(fecha);
                     break;
                 case 4:
                     System.out.println("Ingrese la fecha (en formato YYYY-MM-DD):");
