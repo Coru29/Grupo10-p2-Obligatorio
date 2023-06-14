@@ -2,7 +2,7 @@ package TADs.Hash;
 
 import Entidades.User;
 
-import java.util.ArrayList;
+import TADs.MyArrayList;
 import java.util.List;
 
 public class LinearProbingHashTable<K, V> implements HashTable<K, V> {
@@ -16,8 +16,8 @@ public class LinearProbingHashTable<K, V> implements HashTable<K, V> {
         table = new Entry[START_CAPACITY];
     }
 
-    public List<Entry<K, V>> getEntries() {
-        List<Entry<K, V>> entries = new ArrayList<>();
+    public MyArrayList<Entry<K, V>> getEntries() {
+        MyArrayList<Entry<K, V>> entries = new MyArrayList<>();
         for (Entry<K, V> entry : table) {
             if (entry != null) {
                 entries.add(entry);
@@ -25,6 +25,7 @@ public class LinearProbingHashTable<K, V> implements HashTable<K, V> {
         }
         return entries;
     }
+
 
 
     private int hash(K key) {
