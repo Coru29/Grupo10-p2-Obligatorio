@@ -18,6 +18,8 @@ public class User implements Comparable<User> {
 
     private String verificado;
 
+    private int CantidadTweets;
+
 
     public long getId() {
         return id;
@@ -39,15 +41,29 @@ public class User implements Comparable<User> {
         this.name = name;
     }
 
+    public int getCantidadTweets() {
+        return CantidadTweets;
+    }
+
     @Override
     public int compareTo(User o) {
         return this.name.compareTo(o.name);
     }
 
-    public User(String text, String verificado) {
-        this.name = text;
+
+    public User(String name, String verificado) {
+        this.name = name;
         this.verificado = verificado;
     }
+
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        User user = (User) o;
+//        return CantidadTweets == user.CantidadTweets;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -56,6 +72,4 @@ public class User implements Comparable<User> {
         User user = (User) o;
         return name.equals(user.name);
     }
-
-
 }

@@ -197,49 +197,69 @@ public class LL<T extends  Comparable<T>> implements Lista<T>{
         System.out.println(temporaryNodeLinkedList.value);
     }
 
-    public void sort() {
-        if (size() < 2) {
-            return;
+
+
+    public NodeLinkedList<T> getMiddle(NodeLinkedList<T> head) {
+        if (head == null) {
+            return head;
         }
 
-        boolean swapped;
-        do {
-            NodeLinkedList<T> current = head;
-            NodeLinkedList<T> previous = null;
-            NodeLinkedList<T> next = head.next;
-            swapped = false;
+        NodeLinkedList<T> slow = head, fast = head;
 
-            while (next != null) {
-                // Cambiamos la condición de la comparación aquí
-                if (current.value.compareTo(next.value) < 0) {
-                    swapped = true;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
 
-                    if (previous != null) {
-                        NodeLinkedList<T> sig = next.next;
-
-                        // Realizamos el intercambio
-                        previous.next = next;
-                        next.next = current;
-                        current.next = sig;
-                    } else {
-                        NodeLinkedList<T> sig = next.next;
-
-                        // Intercambiamos head, lo cual es necesario si el primer elemento es el menor
-                        head = next;
-                        next.next = current;
-                        current.next = sig;
-                    }
-
-                    previous = next;
-                    next = current.next;
-                } else {
-                    previous = current;
-                    current = next;
-                    next = next.next;
-                }
-            }
-        } while (swapped);
+        return slow;
     }
+
+    public NodeLinkedList<T> sortedMerge(NodeLinkedList<T> a, NodeLinkedList<T> b) {
+        NodeLinkedList<T> result;
+
+        if (a == null) {
+            return b;
+        }
+        if (b == null) {
+            return a;
+        }
+
+        // Más grandes primero
+        if (a.value.compareTo(b.value) >= 0) {
+            result = a;
+            result.next = sortedMerge(a.next, b);
+        } else {
+            result = b;
+            result.next = sortedMerge(a, b.next);
+        }
+
+        return result;
+    }
+
+    public NodeLinkedList<T> mergeSort(NodeLinkedList<T> h) {
+        if (h == null || h.next == null) {
+            return h;
+        }
+
+        NodeLinkedList<T> middle = getMiddle(h);
+        NodeLinkedList<T> nextOfMiddle = middle.next;
+
+        middle.next = null;
+
+        NodeLinkedList<T> left = mergeSort(h);
+
+        NodeLinkedList<T> right = mergeSort(nextOfMiddle);
+
+        NodeLinkedList<T> sortedList = sortedMerge(left, right);
+
+        return sortedList;
+    }
+
+    public void sort() {
+        head = mergeSort(head);
+    }
+
+
 
 }
 
