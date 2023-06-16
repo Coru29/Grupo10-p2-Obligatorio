@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import java.util.ArrayList; //ojo con esto hay q cambiar lo de la primera funcion
-import java.util.List;
-
 public class CSVReader {
 
     public static void leerCSV(String[] args) {
@@ -112,16 +109,26 @@ public class CSVReader {
                 for (int i = 0; i < listaPilotos.size(); i++) {
                     String piloto = listaPilotos.get(i);
 
+                    //inicializo el nombre y ape
+                    String nombrePiloto;
+                    String apePiloto;
                     String[] partesPiloto = piloto.split(" ");
-                    String nombrePiloto = partesPiloto[0];
-                    String apePiloto = partesPiloto[1];
 
-                    if (text.contains(nombrePiloto) || text.contains(apePiloto) && anoInt == anoInput && mesInt == mesInput){
+                    //los asigno y si es Nyck de Vries le saco el "de"
+                    if (partesPiloto.length >= 3){
+                         nombrePiloto = partesPiloto[0];
+                         apePiloto = partesPiloto[2];
+                    }else{
+                         nombrePiloto = partesPiloto[0];
+                         apePiloto = partesPiloto[1];
+                    }
+
+
+                    if ((text.contains(nombrePiloto) || text.contains(apePiloto)) && anoInt == anoInput && mesInt == mesInput){
                         // Incrementa el contador para este piloto
                         contadorPilotos.put(piloto, contadorPilotos.get(piloto) + 1);
                     }
                 }
-
 
             }
             System.out.println("tweets en ese mes: "+contadorTweets);
@@ -130,7 +137,6 @@ public class CSVReader {
             LL<Piloto> pilotosOrdenados = new LL<>();
 
 
-// Imprimir los contadores
             for (int i = 0; i < listaPilotos.size(); i++) {
                 String piloto = listaPilotos.get(i);
                 int contPiloto = contadorPilotos.get(piloto);
@@ -169,7 +175,6 @@ public class CSVReader {
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
             LinearProbingHashTable<User, LL<Tweet> >usuariosReg = new LinearProbingHashTable<>();
-            LL<UsuarioConTweets> usuariosAOrdenar = new LL<>();
 
             for (CSVRecord record : records) {
                 // saco las 3 columnas q quiero
@@ -197,26 +202,43 @@ public class CSVReader {
 
                 }
             }
-            // intento ordenar un pedazo
+            // ordeno los usuarios de a grupos para q no haga overflow
 
             int totalUsuarios = usuariosReg.getEntries().size();
-            int lote = 2000;  //hay que buscar el mejor tamaño de lote
+            int lote = 3000;  //hay que buscar el mejor tamaño de lote
+            LL<UsuarioConTweets> usuariosAOrdenar = new LL<>();
+
+            UsuarioConTweets usuario15 = null;
+            int sizeUsuario15 = 0;  // el tamaño de la lista del usuario 15
 
             for (int subLote = 0; subLote < totalUsuarios; subLote += lote) {
                 System.out.println("Procesando lote que comienza en el usuario " + subLote);
 
                 for (int i = subLote; i < Math.min(subLote + lote, totalUsuarios); i++) {
-                    String name = usuariosReg.getEntries().get(i).getKey().getName();
-                    String verif = usuariosReg.getEntries().get(i).getKey().getVerificado();
-                    LL<Tweet> listaTweetsAgregados = usuariosReg.getEntries().get(i).getKey().getListaTweets();
+                    Entry<User, LL<Tweet>> tempUser = usuariosReg.getEntries().get(i);
+                    LL<Tweet> listaTweetsAgregados = tempUser.getKey().getListaTweets();
 
-                    UsuarioConTweets tempUsuarioConTweets = new UsuarioConTweets(name,verif,listaTweetsAgregados);
-                    usuariosAOrdenar.add(tempUsuarioConTweets);
+                    // si el usuario q estoy comparando tiene size mas chico lo paso de largo
+                    if (usuario15 == null || listaTweetsAgregados.size() > sizeUsuario15) {
+                        // si no, creo un usuarios y lo añado
+                        String name = tempUser.getKey().getName();
+                        String verif = tempUser.getKey().getVerificado();
+                        UsuarioConTweets tempUsuarioConTweets = new UsuarioConTweets(name,verif,listaTweetsAgregados);
+
+                        usuariosAOrdenar.add(tempUsuarioConTweets);
+                        usuariosAOrdenar.sort();
+
+                        // actualizo el usuario 15
+                        if (usuariosAOrdenar.size() > 15) {
+                            usuario15 = usuariosAOrdenar.get(14);
+                            sizeUsuario15 = usuario15.getListaTweetsCargados().size();
+                        }
+                    }
                 }
-
-                usuariosAOrdenar.sort();
-
             }
+
+
+
 
             System.out.println();
             System.out.println();
@@ -244,7 +266,7 @@ public class CSVReader {
         long startTime = System.nanoTime();
 
         try {
-            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset_test.csv");
+            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
 
@@ -280,13 +302,12 @@ public class CSVReader {
 
             System.out.println( "Cantidad de hashtags en el dia " + fecha+ ": "+hashTagsReg.getEntries().size());
 
-            long endTime = System.nanoTime();
-
-            long durationInMilliseconds = Math.abs((endTime - startTime) / 1_000_000);
-
             System.out.println();
-            double roundedDuration = Math.round(durationInMilliseconds * 10.0) / 10.0;
-            System.out.println("La función tardó " + roundedDuration + " milisegundos.");
+            long endTime = System.nanoTime();
+            double durationInSeconds = (endTime - startTime) / 1_000_000_000.0;
+            System.out.println();
+            double roundedDuration = Math.round(durationInSeconds * 10.0) / 10.0;
+            System.out.println("La función tardó " + roundedDuration + " segundos.");
             System.out.println();
 
 
@@ -294,8 +315,6 @@ public class CSVReader {
             e.printStackTrace();
         }
     }
-
-
 
 
 

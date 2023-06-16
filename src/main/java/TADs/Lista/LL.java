@@ -259,7 +259,51 @@ public class LL<T extends  Comparable<T>> implements Lista<T>{
         head = mergeSort(head);
     }
 
+    // bubble
 
+    public void bSort() {
+        if (size() < 2) {
+            return;
+        }
+
+        boolean swapped;
+        do {
+            NodeLinkedList<T> current = head;
+            NodeLinkedList<T> previous = null;
+            NodeLinkedList<T> next = head.next;
+            swapped = false;
+
+            while (next != null) {
+                // Cambiamos la condición de la comparación aquí
+                if (current.value.compareTo(next.value) < 0) {
+                    swapped = true;
+
+                    if (previous != null) {
+                        NodeLinkedList<T> sig = next.next;
+
+                        // Realizamos el intercambio
+                        previous.next = next;
+                        next.next = current;
+                        current.next = sig;
+                    } else {
+                        NodeLinkedList<T> sig = next.next;
+
+                        // Intercambiamos head, lo cual es necesario si el primer elemento es el menor
+                        head = next;
+                        next.next = current;
+                        current.next = sig;
+                    }
+
+                    previous = next;
+                    next = current.next;
+                } else {
+                    previous = current;
+                    current = next;
+                    next = next.next;
+                }
+            }
+        } while (swapped);
+    }
 
 }
 
