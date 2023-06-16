@@ -14,6 +14,9 @@ public class Tweet implements Comparable<Tweet>{
         this.id = id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
 
     @Override
     public int compareTo(Tweet otherTweet) {

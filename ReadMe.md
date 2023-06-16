@@ -1,4 +1,4 @@
-# Informe Obligatorio Progamació2
+# Informe Obligatorio Progamación2
 
 ## Índice
 

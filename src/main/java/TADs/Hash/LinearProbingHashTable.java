@@ -7,7 +7,7 @@ import java.util.List;
 
 public class LinearProbingHashTable<K, V> implements HashTable<K, V> {
     private Entry<K, V>[] table;
-    private static final int START_CAPACITY = 10;
+    private static final int START_CAPACITY = 150_000;
     private int size;
     private static final float LOAD_FACTOR = 0.75f; // que tan llena tiene estar la tabla para hacer el resize
 

@@ -1,6 +1,7 @@
 package Entidades;
 
 import TADs.Lista.LL;
+import TADs.MyArrayList;
 
 import java.util.Objects;
 
@@ -10,8 +11,14 @@ public class UsuarioConTweets   implements Comparable<UsuarioConTweets>{
     private String isVerified;
 
      LL<Tweet> listaTweetsCargados;
-     
-//     private int cantidadTweets = listaTweetsCargados.size();
+
+     MyArrayList<Tweet> arrayTweetsCargados;
+
+    public MyArrayList<Tweet> getArrayTweetsCargados() {
+        return arrayTweetsCargados;
+    }
+
+    //     private int cantidadTweets = listaTweetsCargados.size();
 
     public UsuarioConTweets(String name, String isVerified, LL<Tweet> listaTweetsCargados) {
         this.name = name;

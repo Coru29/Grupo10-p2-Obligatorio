@@ -1,7 +1,9 @@
 package Entidades;
 
 
+import TADs.Hash.LinearProbingHashTable;
 import TADs.Lista.*;
+import TADs.MyArrayList;
 
 public class User implements Comparable<User> {
 
@@ -11,6 +13,17 @@ public class User implements Comparable<User> {
         return listaTweets;
     }
 
+    MyArrayList<Tweet> arrayTweets;
+
+    public MyArrayList<Tweet> getArrayTweets() {
+        return arrayTweets;
+    }
+
+    LinearProbingHashTable<Tweet,Integer> hashTweets;
+
+    public LinearProbingHashTable<Tweet, Integer> getHashTweets() {
+        return hashTweets;
+    }
 
     private long id;
 
@@ -39,6 +52,10 @@ public class User implements Comparable<User> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setVerificado(String verificado) {
+        this.verificado = verificado;
     }
 
     public int getCantidadTweets() {

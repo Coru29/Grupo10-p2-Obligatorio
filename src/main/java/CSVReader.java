@@ -37,6 +37,7 @@ public class CSVReader {
 //                String source = record.get("source");
 //                String is_retweet = record.get("is_retweet");
 
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -174,8 +175,9 @@ public class CSVReader {
             Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset_test.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
-            LinearProbingHashTable<User, LL<Tweet> >usuariosReg = new LinearProbingHashTable<>();
+//            LinearProbingHashTable<UsuarioConTweets, Integer> usuariosAOrdenarHash = new LinearProbingHashTable<>();
 
+            LinearProbingHashTable<User, LL<Tweet> >usuariosReg = new LinearProbingHashTable<>();
             for (CSVRecord record : records) {
                 // saco las 3 columnas q quiero
                 String tweetIDstr = record.get("");
@@ -189,21 +191,20 @@ public class CSVReader {
                 Tweet tempTweet = new Tweet(tweetId);
 
                 //cargo todos los usuarios con su lista de tweets
-                if (!usuariosReg.contains(tempUser)){
+                User registeredUser = usuariosReg.getUser(tempUser);
+
+                if (registeredUser == null) {
+
                     tempUser.getListaTweets().add(tempTweet);
                     usuariosReg.put(tempUser, tempUser.getListaTweets());
-                }else {
-                    User registeredUser = usuariosReg.getUser(tempUser);
-                    if (registeredUser != null) {
-                        registeredUser.getListaTweets().add(tempTweet);
-                        usuariosReg.put(registeredUser, registeredUser.getListaTweets());
-                    }
-
-
+                } else {
+                    // Si el usuario ya existe, simplemente agrega el nuevo tweet al usuario registrado
+                    registeredUser.getListaTweets().add(tempTweet);
                 }
-            }
-            // ordeno los usuarios de a grupos para q no haga overflow
 
+            }
+
+            // ordeno los usuarios de a grupos para q no haga overflow
             int totalUsuarios = usuariosReg.getEntries().size();
             int lote = 3000;  //hay que buscar el mejor tamaño de lote
             LL<UsuarioConTweets> usuariosAOrdenar = new LL<>();
