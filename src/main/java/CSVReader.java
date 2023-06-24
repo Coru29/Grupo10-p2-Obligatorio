@@ -16,26 +16,54 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class CSVReader {
-
-    public static void leerCSV(String[] args) {
+    public static void leerCSV(int input) {
+        //carga todos  los datos ---------
         try {
             Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset_test.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
             for (CSVRecord record : records) {
-//                String tweetID = record.get("");
+//                String tweetIdSTR = record.get("");
+//                int tweetId = Integer.parseInt(tweetIdSTR);
 //                String user_name = record.get("user_name");
-//                String user_location = record.get("user_location");
-//                String user_description = record.get("user_description");
-//                String user_created = record.get("user_created");
-//                String user_followers = record.get("user_followers");
-//                String user_friends = record.get("user_friends");
-//                String user_favourites = record.get("user_favourites");
+////                String user_location = record.get("user_location");
+////                String user_description = record.get("user_description");
+////                String user_created = record.get("user_created");
+////                String user_followers = record.get("user_followers");
+////                String user_friends = record.get("user_friends");
+////                String user_favourites = record.get("user_favourites");
 //                String user_verified = record.get("user_verified");
-//                String date = record.get("date");
+////                String date = record.get("date");
 //                String text = record.get("text");
+////                String hashtags = record.get("hashtags");
+////                String source = record.get("source");
+////                String is_retweet = record.get("is_retweet");
+//
+//                User tempUsuario = new User(user_name,user_verified);
+//
 //                String hashtags = record.get("hashtags");
-//                String source = record.get("source");
-//                String is_retweet = record.get("is_retweet");
+//
+//
+//                String[] hashtagsParts = hashtags.split(",");
+//
+//                LL<HashTag> listaHashTags = new LL<>();
+//                //separo cada hashtag
+//                for (String parteHashtag : hashtagsParts) {
+//                    // le saco los corchetes
+//                    String parteHashSinCorcheteIzq = parteHashtag.replace("[", "");
+//                    String parteHashSinCorcheteDer = parteHashSinCorcheteIzq.replace("]", "");
+//
+//                    // le saco las comillas simples y los espacios
+//                    String hashTagLimpio = parteHashSinCorcheteDer.replace("'", " ");
+//                    String hasTagReLimpio = hashTagLimpio.replace(" ", "");
+//
+//                    HashTag hashTagIndividual = new HashTag(hasTagReLimpio);
+//                    if (!listaHashTags.contains(hashTagIndividual)){
+//                        listaHashTags.add(hashTagIndividual);
+//                    }
+//                }
+//
+//                Tweet tempTweet = new Tweet(tweetId,text,tempUsuario,listaHashTags);
+
 
 
             }
@@ -61,8 +89,9 @@ public class CSVReader {
 
         try (BufferedReader reader = Files.newBufferedReader(Paths.get(archivo))) {
             String line;
+
             while ((line = reader.readLine()) != null) {
-                listaPilotos.add(line);
+                listaPilotos.add(line.toLowerCase());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -86,7 +115,7 @@ public class CSVReader {
 
 
                 //recorro cada tupla
-                String text = record.get("text");
+                String text = record.get("text").toLowerCase();
                 String date = record.get("date");
 
                 //hago el split de la fecha por - para sacar dia mes y el año con la hora
@@ -142,6 +171,7 @@ public class CSVReader {
                 String piloto = listaPilotos.get(i);
                 int contPiloto = contadorPilotos.get(piloto);
                 Piloto tempPiloto = new Piloto(piloto,contPiloto);
+
                 pilotosOrdenados.add(tempPiloto);
             }
 
@@ -149,7 +179,7 @@ public class CSVReader {
             pilotosOrdenados.sort();
 
             for (int i = 0; i < 10; i++) {
-                System.out.println( i+1 +"." +pilotosOrdenados.get(i));
+                System.out.println( i+1 +"."+ "Piloto: "+pilotosOrdenados.get(i).getNombre() + " Menciones: " + pilotosOrdenados.get(i).getConteo());
             }
 
 
@@ -170,44 +200,50 @@ public class CSVReader {
     // ----------  ----------  Segunda funcion ----------  ----------
     public static void topUsuariosTweets() {
         long startTime = System.nanoTime();
-
         try {
-            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset_test.csv");
+            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
 //            LinearProbingHashTable<UsuarioConTweets, Integer> usuariosAOrdenarHash = new LinearProbingHashTable<>();
 
-            LinearProbingHashTable<User, LL<Tweet> >usuariosReg = new LinearProbingHashTable<>();
+            LinearProbingHashTable<User, Integer>usuariosReg = new LinearProbingHashTable<>();
+
             for (CSVRecord record : records) {
                 // saco las 3 columnas q quiero
-                String tweetIDstr = record.get("");
-                int tweetId = Integer.parseInt(tweetIDstr);
+//                String tweetIDstr = record.get("");
+//                int tweetId = Integer.parseInt(tweetIDstr);
 
                 String user_name = record.get("user_name");
                 String user_verified = record.get("user_verified");
 
                 //creo un usuario y un tweet
                 User tempUser = new User(user_name,user_verified);
-                Tweet tempTweet = new Tweet(tweetId);
+//                Tweet tempTweet = new Tweet(tweetId);
 
                 //cargo todos los usuarios con su lista de tweets
                 User registeredUser = usuariosReg.getUser(tempUser);
 
                 if (registeredUser == null) {
-
-                    tempUser.getListaTweets().add(tempTweet);
-                    usuariosReg.put(tempUser, tempUser.getListaTweets());
+                    // HACER UN CONTADOR
+                    tempUser.setCantidadTweets(1);
+//                    tempUser.getListaTweets().add(tempTweet);
+                    usuariosReg.put(tempUser, tempUser.getCantidadTweets());
                 } else {
-                    // Si el usuario ya existe, simplemente agrega el nuevo tweet al usuario registrado
-                    registeredUser.getListaTweets().add(tempTweet);
+                    int cantidadTweetsReal = registeredUser.getCantidadTweets();
+                    registeredUser.setCantidadTweets(cantidadTweetsReal + 1);
+                    // si el usuario ya existe, simplemente agrega el nuevo tweet al usuario registrado
+//                    registeredUser.getListaTweets().add(tempTweet);
                 }
 
+
             }
+//            ----------  ----------  ORDENAMIENTO DE USUARIOS ----------  ----------
 
             // ordeno los usuarios de a grupos para q no haga overflow
             int totalUsuarios = usuariosReg.getEntries().size();
-            int lote = 3000;  //hay que buscar el mejor tamaño de lote
+            int lote = 5_000;  //hay que buscar el mejor tamaño de lote
             LL<UsuarioConTweets> usuariosAOrdenar = new LL<>();
+//            MyArrayList<UsuarioConTweets> usuariosAOrdenar = new MyArrayList<>();
 
             UsuarioConTweets usuario15 = null;
             int sizeUsuario15 = 0;  // el tamaño de la lista del usuario 15
@@ -216,36 +252,37 @@ public class CSVReader {
                 System.out.println("Procesando lote que comienza en el usuario " + subLote);
 
                 for (int i = subLote; i < Math.min(subLote + lote, totalUsuarios); i++) {
-                    Entry<User, LL<Tweet>> tempUser = usuariosReg.getEntries().get(i);
-                    LL<Tweet> listaTweetsAgregados = tempUser.getKey().getListaTweets();
+                    Entry<User, Integer> tempUser = usuariosReg.getEntries().get(i);
+
+                    int cantidadTweets = tempUser.getKey().getCantidadTweets();
 
                     // si el usuario q estoy comparando tiene size mas chico lo paso de largo
-                    if (usuario15 == null || listaTweetsAgregados.size() > sizeUsuario15) {
+                    if (usuario15 == null || cantidadTweets > sizeUsuario15) {
                         // si no, creo un usuarios y lo añado
                         String name = tempUser.getKey().getName();
                         String verif = tempUser.getKey().getVerificado();
-                        UsuarioConTweets tempUsuarioConTweets = new UsuarioConTweets(name,verif,listaTweetsAgregados);
+                        int cantTweets = tempUser.getKey().getCantidadTweets();
+
+                        UsuarioConTweets tempUsuarioConTweets = new UsuarioConTweets(name,verif,cantTweets);
 
                         usuariosAOrdenar.add(tempUsuarioConTweets);
-                        usuariosAOrdenar.sort();
 
                         // actualizo el usuario 15
                         if (usuariosAOrdenar.size() > 15) {
+                            usuariosAOrdenar.sort();
                             usuario15 = usuariosAOrdenar.get(14);
-                            sizeUsuario15 = usuario15.getListaTweetsCargados().size();
+                            sizeUsuario15 = usuario15.getCantidadTweetTotal();
                         }
                     }
                 }
             }
 
-
-
-
             System.out.println();
             System.out.println();
+//            ----------  ----------  MUESTRO LOS USUARIOS ----------  ----------
 
             for (int i = 0; i < 15; i++) {
-                System.out.println(i+1 + "." +"Usuario: "+usuariosAOrdenar.get(i).getName() + " Verificado: " + usuariosAOrdenar.get(i).getIsVerified() + " Tweets: " + usuariosAOrdenar.get(i).getListaTweetsCargados().size());
+                System.out.println(i+1 + "." +"Usuario: "+usuariosAOrdenar.get(i).getName() + " Verificado: " + usuariosAOrdenar.get(i).getIsVerified() + " Tweets: " + usuariosAOrdenar.get(i).getCantidadTweetTotal());
             }
             System.out.println("Cantidad total de usuarios: " +usuariosReg.getEntries().size());
 
@@ -277,29 +314,30 @@ public class CSVReader {
                 String date = record.get("date");
                 String hashtags = record.get("hashtags");
 
+                if (!hashtags.contains("[")) continue;
 
-                String[] hashtagsParts = hashtags.split(",");
-
-                for (String parteHashtag : hashtagsParts) {
-                    // le saco los corchetes
-                    String parteHashSinCorcheteIzq = parteHashtag.replace("[", "");
-                    String parteHashSinCorcheteDer = parteHashSinCorcheteIzq.replace("]", "");
-
-                    // le saco las comillas simples y los espacios
-                    String hashTagLimpio = parteHashSinCorcheteDer.replace("'", " ");
-                    String hasTagReLimpio = hashTagLimpio.replace(" ", "");
-
-                    HashTag hashTagIndividual = new HashTag(hasTagReLimpio);
-
-                    if (!hashTagsReg.contains(hashTagIndividual) && date.contains(fecha)){ //en el caso que no este registrado
-                        hashTagsReg.put(hashTagIndividual,1);
-                    }else if (hashTagsReg.contains(hashTagIndividual) && date.contains(fecha)){ //en el caso q ya este registrado
-                        hashTagsReg.put(hashTagIndividual, hashTagsReg.get(hashTagIndividual) +1);
-                    }
-
+                if (!date.contains(fecha)) {
+                    continue;
                 }
 
+
+                String[] hashtagsParts = hashtags.split(",");
+                for (String parteHashtag : hashtagsParts) {
+                    // remover corchetes, comillas simples y espacios
+                    String hashTagLimpio = parteHashtag.replace("[", "").replace("]", "").replace("'", "").replace(" ", "");
+
+                    HashTag hashTagIndividual = new HashTag(hashTagLimpio);
+
+                    // Actualizar el conteo en hashTagsReg
+                    Integer count = hashTagsReg.get(hashTagIndividual);
+                    if (count == null) {
+                        hashTagsReg.put(hashTagIndividual, 1);
+                    } else {
+                        hashTagsReg.put(hashTagIndividual, count + 1);
+                    }
+                }
             }
+
 
             System.out.println( "Cantidad de hashtags en el dia " + fecha+ ": "+hashTagsReg.getEntries().size());
 
@@ -316,6 +354,8 @@ public class CSVReader {
             e.printStackTrace();
         }
     }
+
+
 
 
 

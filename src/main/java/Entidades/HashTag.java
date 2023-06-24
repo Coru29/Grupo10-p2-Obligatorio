@@ -2,7 +2,7 @@ package Entidades;
 
 import java.util.Objects;
 
-public class HashTag {
+public class HashTag implements Comparable<HashTag>{
 
     private long id;
 
@@ -22,5 +22,10 @@ public class HashTag {
 
     public HashTag(String text) {
         this.text = text;
+    }
+
+    @Override
+    public int compareTo(HashTag o) {
+        return this.text.compareTo(o.text);
     }
 }

@@ -13,18 +13,6 @@ public class User implements Comparable<User> {
         return listaTweets;
     }
 
-    MyArrayList<Tweet> arrayTweets;
-
-    public MyArrayList<Tweet> getArrayTweets() {
-        return arrayTweets;
-    }
-
-    LinearProbingHashTable<Tweet,Integer> hashTweets;
-
-    public LinearProbingHashTable<Tweet, Integer> getHashTweets() {
-        return hashTweets;
-    }
-
     private long id;
 
     private String name;
@@ -34,13 +22,7 @@ public class User implements Comparable<User> {
     private int CantidadTweets;
 
 
-    public long getId() {
-        return id;
-    }
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getVerificado() {
         return verificado;
@@ -50,16 +32,13 @@ public class User implements Comparable<User> {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setVerificado(String verificado) {
-        this.verificado = verificado;
-    }
 
     public int getCantidadTweets() {
         return CantidadTweets;
+    }
+
+    public void setCantidadTweets(int cantidadTweets) {
+        CantidadTweets = cantidadTweets;
     }
 
     @Override
@@ -73,8 +52,13 @@ public class User implements Comparable<User> {
         this.verificado = verificado;
     }
 
+//    public User(MyArrayList<Tweet> arrayTweets, String name, String verificado) {
+//        this.arrayTweets = arrayTweets;
+//        this.name = name;
+//        this.verificado = verificado;
+//    }
 
-//    @Override
+    //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;

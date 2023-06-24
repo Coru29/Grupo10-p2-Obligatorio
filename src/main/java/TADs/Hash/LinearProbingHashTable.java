@@ -3,7 +3,6 @@ package TADs.Hash;
 import Entidades.User;
 
 import TADs.MyArrayList;
-import java.util.List;
 
 public class LinearProbingHashTable<K, V> implements HashTable<K, V> {
     private Entry<K, V>[] table;

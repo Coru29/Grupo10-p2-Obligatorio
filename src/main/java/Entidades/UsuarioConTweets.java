@@ -12,18 +12,17 @@ public class UsuarioConTweets   implements Comparable<UsuarioConTweets>{
 
      LL<Tweet> listaTweetsCargados;
 
-     MyArrayList<Tweet> arrayTweetsCargados;
+     private int cantidadTweetTotal;
 
-    public MyArrayList<Tweet> getArrayTweetsCargados() {
-        return arrayTweetsCargados;
+    public int getCantidadTweetTotal() {
+        return cantidadTweetTotal;
     }
 
-    //     private int cantidadTweets = listaTweetsCargados.size();
-
-    public UsuarioConTweets(String name, String isVerified, LL<Tweet> listaTweetsCargados) {
+    public UsuarioConTweets(String name, String isVerified, int cantidadTweetTotal) {
         this.name = name;
         this.isVerified = isVerified;
-        this.listaTweetsCargados = listaTweetsCargados;
+        this.cantidadTweetTotal = cantidadTweetTotal;
+//        this.listaTweetsCargados = listaTweetsCargados;
     }
 
     public String getName() {
@@ -40,18 +39,15 @@ public class UsuarioConTweets   implements Comparable<UsuarioConTweets>{
 
     @Override
     public int compareTo(UsuarioConTweets o) {
-        return Integer.compare(this.listaTweetsCargados.size(), o.listaTweetsCargados.size());
+        return Integer.compare(this.cantidadTweetTotal, o.cantidadTweetTotal);
     }
-
-
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UsuarioConTweets that = (UsuarioConTweets) o;
-        return Objects.equals(listaTweetsCargados.size(), that.listaTweetsCargados.size());
+        return Objects.equals(cantidadTweetTotal, that.cantidadTweetTotal);
     }
 
 

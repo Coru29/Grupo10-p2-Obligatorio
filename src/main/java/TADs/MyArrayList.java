@@ -58,4 +58,15 @@ public class MyArrayList<E> {
     public void resetCursor() {
         cursor = 0;
     }
+
+    public void remove(int i) {
+        if (i >= size || i < 0) {
+            throw new IndexOutOfBoundsException("Index: " + i + ", Size " + i);
+        }
+        for (int j = i; j < size - 1; j++) {
+            elements[j] = elements[j + 1];
+        }
+        size--;
+    }
+
 }

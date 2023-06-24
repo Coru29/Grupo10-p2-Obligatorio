@@ -1,5 +1,7 @@
 package Entidades;
 
+import TADs.Lista.LL;
+
 public class Tweet implements Comparable<Tweet>{
 
     private long id;
@@ -7,6 +9,9 @@ public class Tweet implements Comparable<Tweet>{
     private String  source;
     private boolean isRetweet;
     private User usuarioDelTweet;
+
+    private LL<HashTag> hashTagsTweet;
+
 
     // getters and setters...
 
@@ -17,6 +22,13 @@ public class Tweet implements Comparable<Tweet>{
     public void setId(long id) {
         this.id = id;
     }
+
+//    public Tweet(long id, String content, User usuarioDelTweet, LL<HashTag> hashTagsTweet) {
+//        this.id = id;
+//        this.content = content;
+//        this.usuarioDelTweet = usuarioDelTweet;
+//        this.hashTagsTweet = hashTagsTweet;
+//    }
 
     @Override
     public int compareTo(Tweet otherTweet) {
