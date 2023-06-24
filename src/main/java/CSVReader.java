@@ -2,6 +2,9 @@ import TADs.Hash.*;
 import TADs.Lista.*;
 import TADs.MyArrayList;
 
+import TADs.HashMichel.HashTabla.*;
+import TADs.HeapMichel.*;
+
 import Entidades.*;
 
 import org.apache.commons.csv.CSVFormat;
@@ -196,12 +199,11 @@ public class CSVReader {
 
     }
 
-
     // ----------  ----------  Segunda funcion ----------  ----------
     public static void topUsuariosTweets() {
         long startTime = System.nanoTime();
         try {
-            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset.csv");
+            Reader in = new FileReader("src/main/resources/f1_dataset.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
 //            LinearProbingHashTable<UsuarioConTweets, Integer> usuariosAOrdenarHash = new LinearProbingHashTable<>();
@@ -241,7 +243,7 @@ public class CSVReader {
 
             // ordeno los usuarios de a grupos para q no haga overflow
             int totalUsuarios = usuariosReg.getEntries().size();
-            int lote = 5_000;  //hay que buscar el mejor tamaño de lote
+            int lote = 20_000;  //hay que buscar el mejor tamaño de lote
             LL<UsuarioConTweets> usuariosAOrdenar = new LL<>();
 //            MyArrayList<UsuarioConTweets> usuariosAOrdenar = new MyArrayList<>();
 
@@ -304,7 +306,7 @@ public class CSVReader {
         long startTime = System.nanoTime();
 
         try {
-            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset.csv");
+            Reader in = new FileReader("src/main/resources/f1_dataset.csv");
             Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
 
@@ -355,9 +357,173 @@ public class CSVReader {
         }
     }
 
+    // ----------  ----------  Cuarta funcion ----------  ---------- *Michel*
+    public static void hashtagMasUsado(String fecha) {
+        try {
+            long startTime = System.nanoTime();
+            Reader in = new FileReader("src/main/resources/f1_dataset.csv");
+            Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+
+            HashTabla<HashTag, Integer> hashTagsReg = new HashTablaImpl<>();
+
+            for (CSVRecord record : records) {
+                String date = record.get("date");
+                String hashtags = record.get("hashtags");
+                // limpia la data eliminando corchetes
+                String parteHashSinCorcheteIzq = hashtags.replace("[", "");
+                String parteHashSinCorcheteDer = parteHashSinCorcheteIzq.replace("]", "");
+                // independisa los hashtags de la lista del dataset
+                String[] hashtagsSplit = parteHashSinCorcheteDer.split(",");
+                // chequea la fecha
+                if (date.contains(fecha)) {
+                    for (String parteHashtag : hashtagsSplit) {
+                        // elimina espacios y comillas para procesar y chequear los hashtagas
+                        HashTag value = new HashTag(parteHashtag.replaceAll("[\\s'']", ""));
+                        if (!hashTagsReg.contains(value)) { //en el caso que no este registrado
+                            hashTagsReg.put(value, 1);
+                        } else if (hashTagsReg.contains(value)) { //en el caso q ya este registrado
+                            NodoHash nodo = hashTagsReg.get(value);
+                            Integer newValue = (Integer) nodo.getData();
+                            hashTagsReg.upDate(value, newValue + 1);
+                        }
+                    }
+                }
+            }
+
+            int contHashtags = 0;
+            String hashtag = " ";
+
+            for (NodoHash<HashTag, Integer> entry : hashTagsReg.getTabla()) {
+                // controla en quedarce con aquel hashtag queaparece con mayor frecuencia y que nosea F1 o f1
+                if (entry != null && entry.getData() > contHashtags && !entry.getKey().getText().equals("F1") && !entry.getKey().getText().equals("f1")) {
+                    hashtag = entry.getKey().getText();
+                    contHashtags = entry.getData();
+                }
+            }
+            // imprime por salida estandar el hashtag de mas aparece para la fecha ingresada
+            //en caso que no exista alguno para la fecha ingresada se advierte que no hay Hashtag para ese dia
+            if (!hashtag.equals(" ")) {
+                System.out.println();
+                System.out.println("Hashtags más usado el " + fecha + ": " + hashtag);
+            } else {
+                System.out.println();
+                System.out.println("No hay Hashtags para el día " + fecha);
+            }
+            long endTime = System.nanoTime();
+            double durationInSeconds = (endTime - startTime) / 1_000_000_000.0;
+            System.out.println();
+            double roundedDuration = Math.round(durationInSeconds * 10.0) / 10.0;
+            System.out.println("La función tardó " + roundedDuration + " segundos.");
+            System.out.println();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
+    // ----------  ----------  Quinta funcion ----------  ---------- *Michel*
+    public static void topSiteCuentas() {
+        try {
+            long startTime = System.nanoTime();
+            Reader in = new FileReader("src/main/resources/f1_dataset.csv");
+            Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
+            MyHeap<Integer, User> cuentas = new MyHeapImpl<>("maximo");
+
+            for (CSVRecord record : records) {
+                // limpia los espacios y recolecta nombre y favoritos
+                String user_name = record.get("user_name").replaceAll("\\s", ""); //nombre usuario
+                String user_favourites = record.get("user_favourites"); //cantidad de favoritos
+                String user_verified = record.get("user_verified");
+                Integer user_favouritesInt = 0;
+
+                User newUser = new User(user_name, user_verified);
+
+                boolean bandera = false;
+                // limpia los datos de la columna favoritos y los lleva a valores puros Integer
+                if (user_favourites.contains(".") && !user_favourites.contains("-") && !user_favourites.contains(":")) {
+                    double doubleValue = Double.parseDouble(user_favourites);
+                    user_favouritesInt = (int) doubleValue;
+                    bandera = true;
+                } else if (!user_favourites.contains("-") && !user_favourites.contains(":")) {
+                    user_favouritesInt = Integer.parseInt(user_favourites);
+                    bandera = true;
+                }
+                // en una estructura Heap carga los datos de cantidad de favoritos segun cada usuario
+                // se decide esta estrucura ya que implementa un MAXheap organizado desde mayor a menor
+                // usuado la cantidad de favoritos como clave
+                if (bandera) {
+                    newUser.setFavourites(user_favouritesInt);
+                    cuentas.insert(user_favouritesInt, newUser);
+                }
+            }
+
+            // como la estrucura Maxheap ya tiene en su nodo raiz el mayor usuario con favoritos
+            // resta ir retirando las raizes en caso que este repetido el usuario se tomara
+            // el primero ya que la estrucura MAXheap lo organizo estando primero el de mayor al momento de favoritos
+            NodoTreeBin<Integer, User> user;
+            HashTabla<String, Integer> usuariosYaRecorrido = new HashTablaImpl<>();
+            // devuelvo el usuario y sus favoritos
+            int i = 1;
+            System.out.println();
+            while (i <= 7) {
+                user = cuentas.delete();
+                String user_name = user.getData().getName(); // nombre usuario
+                Integer user_favourites = user.getKey(); //cantidad de favoritos
+                if (!usuariosYaRecorrido.contains(user_name)) {
+                    usuariosYaRecorrido.put(user_name, user_favourites);
+                    System.out.println(i + ") " + user_name + " " + user_favourites);
+                    ++i;
+                }
+            }
+            long endTime = System.nanoTime();
+            double durationInSeconds = (endTime - startTime) / 1_000_000_000.0;
+            System.out.println();
+            double roundedDuration = Math.round(durationInSeconds * 10.0) / 10.0;
+            System.out.println("La función tardó " + roundedDuration + " segundos.");
+            System.out.println();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // ----------  ----------  Sexta funcion ----------  ---------- *Michel*
+    public static void tweetsFrase(String frase) {
+        try {
+            long startTime = System.nanoTime();
+            Reader in = new FileReader("src/main/resources/f1_dataset.csv");
+            Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+            int count = 0;
+            for (CSVRecord record : records) {
+                //limpia los datos y chequea tweet a tweet la existencia de la palabra o frase solicitada
+                String tweets = record.get("text").replaceAll("\\s", "");
+                String fraseValue = frase.replaceAll("\\s", "");
+                if (tweets.contains(fraseValue)) {
+                    count++;
+                }
+            }
+            // retorna por salida estandar la frecuencia de la palabra o frase ingresada por consola
+            if (count != 0) {
+                System.out.println();
+                System.out.println("Existen " + count + " tweets con la frase/palabra " + "'" + frase + "'");
+            } else {
+                System.out.println();
+                System.out.println("No hay tweets con la frase/palabra " + frase);
+            }
+            long endTime = System.nanoTime();
+            double durationInSeconds = (endTime - startTime) / 1_000_000_000.0;
+            System.out.println();
+            double roundedDuration = Math.round(durationInSeconds * 10.0) / 10.0;
+            System.out.println("La función tardó " + roundedDuration + " segundos.");
+            System.out.println();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
 

@@ -45,15 +45,18 @@ public class Menu {
                 case 4:
                     System.out.println("Ingrese la fecha (en formato YYYY-MM-DD):");
                     String fechaHash = scanner.next();
+                    CSVReader.hashtagMasUsado(fechaHash);
                     // la función para mostrar el hashtag más usado
                     break;
                 case 5:
                     // la función para mostrar las top cuentas con más favoritos
+                    CSVReader.topSiteCuentas();
                     break;
                 case 6:
                     System.out.println("Ingrese la palabra o frase a buscar:");
                     String busqueda = scanner.next();
                     // la función para contar tweets con una frase específica
+                    CSVReader.tweetsFrase(busqueda);
                     break;
                 case 0:
                     System.out.println("Hasta luego!");

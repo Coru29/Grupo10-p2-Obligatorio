@@ -54,22 +54,22 @@ Entendemos que esta decisión puede tener un impacto en la eficiencia del tiempo
 - Función 3:
     - **Descripción:** Cantidad de hashtags distintos para un día dado
     - **Memoria RAM consumida:**  65 MB
-    - **Tiempo de ejecución promedio:**  6.7ss
+    - **Tiempo de ejecución promedio:**  6.7s
 
 
 - Función 4:
     - **Descripción:** Hashtag más usado para un día dado
-    - **Memoria RAM consumida:**  
-    - **Tiempo de ejecución promedio:**  
+    - **Memoria RAM consumida:**  50 MB
+    - **Tiempo de ejecución promedio:**  5.2s
 
 
 - Función 5:
     - **Descripción:** Top 7 cuentas con más favoritos
-    - **Memoria RAM consumida:**  
-    - **Tiempo de ejecución promedio:**  
+    - **Memoria RAM consumida:**  120 MB
+    - **Tiempo de ejecución promedio:**  8s
 
 
 - Función 6:
     - **Descripción:** Cantidad de tweets con una palabra o frase específica
-    - **Memoria RAM consumida:**  
-    - **Tiempo de ejecución promedio:**  
+    - **Memoria RAM consumida:**  83 MB
+    - **Tiempo de ejecución promedio:**  10.3s

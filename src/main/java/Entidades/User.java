@@ -21,6 +21,16 @@ public class User implements Comparable<User> {
 
     private int CantidadTweets;
 
+    private Integer favourites;
+
+    public Integer getFavourites() {
+        return favourites;
+    }
+
+    public void setFavourites(Integer favourites) {
+        this.favourites = favourites;
+    }
+
 
 
 
