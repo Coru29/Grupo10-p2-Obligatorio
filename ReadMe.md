@@ -12,15 +12,7 @@
 
 ## Descripción de los Procesos
 
-### Carga de Datos
-
-(Aquí debes describir brevemente cómo se realiza la carga de datos en tu aplicación)
-
-### Realización de Reportes
-
-(Aquí debes describir brevemente cómo se generan los reportes en tu aplicación)
-
-## Decisiones Tomadas
+### Decisiones Tomadas
 
 En el desarrollo de nuestros procesos, hemos decidido priorizar la eficiencia de la memoria RAM sobre la eficiencia del tiempo. 
 Este enfoque prioritario en la eficiencia de la RAM tiene varias ventajas:
