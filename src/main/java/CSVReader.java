@@ -19,62 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class CSVReader {
-    public static void leerCSV(int input) {
-        //carga todos  los datos ---------
-        try {
-            Reader in = new FileReader("/Users/coru/IdeaProjects/AAObligatorio/src/main/resources/f1_dataset_test.csv");
-            Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
-            for (CSVRecord record : records) {
-//                String tweetIdSTR = record.get("");
-//                int tweetId = Integer.parseInt(tweetIdSTR);
-//                String user_name = record.get("user_name");
-////                String user_location = record.get("user_location");
-////                String user_description = record.get("user_description");
-////                String user_created = record.get("user_created");
-////                String user_followers = record.get("user_followers");
-////                String user_friends = record.get("user_friends");
-////                String user_favourites = record.get("user_favourites");
-//                String user_verified = record.get("user_verified");
-////                String date = record.get("date");
-//                String text = record.get("text");
-////                String hashtags = record.get("hashtags");
-////                String source = record.get("source");
-////                String is_retweet = record.get("is_retweet");
-//
-//                User tempUsuario = new User(user_name,user_verified);
-//
-//                String hashtags = record.get("hashtags");
-//
-//
-//                String[] hashtagsParts = hashtags.split(",");
-//
-//                LL<HashTag> listaHashTags = new LL<>();
-//                //separo cada hashtag
-//                for (String parteHashtag : hashtagsParts) {
-//                    // le saco los corchetes
-//                    String parteHashSinCorcheteIzq = parteHashtag.replace("[", "");
-//                    String parteHashSinCorcheteDer = parteHashSinCorcheteIzq.replace("]", "");
-//
-//                    // le saco las comillas simples y los espacios
-//                    String hashTagLimpio = parteHashSinCorcheteDer.replace("'", " ");
-//                    String hasTagReLimpio = hashTagLimpio.replace(" ", "");
-//
-//                    HashTag hashTagIndividual = new HashTag(hasTagReLimpio);
-//                    if (!listaHashTags.contains(hashTagIndividual)){
-//                        listaHashTags.add(hashTagIndividual);
-//                    }
-//                }
-//
-//                Tweet tempTweet = new Tweet(tweetId,text,tempUsuario,listaHashTags);
-
-
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
     // ----------  ----------  Primer funcion ----------  ----------
@@ -217,7 +161,7 @@ public class CSVReader {
 
                     if (registeredUser == null) {
                         tempUser.setCantidadTweets(1);
-                        usuariosReg.put(tempUser, tempUser.getCantidadTweets());
+                        usuariosReg.put(tempUser, 1);
                     } else {
                         int cantidadTweetsReal = registeredUser.getCantidadTweets();
                         registeredUser.setCantidadTweets(cantidadTweetsReal + 1);
@@ -227,9 +171,6 @@ public class CSVReader {
 
 
 //                -------- -------- ordenamiento de usuarios -------- --------
-
-
-                System.out.println("llegue aca");
 
                 int totalUsuarios = usuariosReg.getEntries().size();
                 int lote = 25_000;
