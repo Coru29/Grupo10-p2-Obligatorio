@@ -202,91 +202,74 @@ public class CSVReader {
     // ----------  ----------  Segunda funcion ----------  ----------
     public static void topUsuariosTweets() {
         long startTime = System.nanoTime();
-        try {
-            Reader in = new FileReader("src/main/resources/f1_dataset.csv");
-            Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+            try (Reader in = new FileReader("src/main/resources/f1_dataset_test.csv")) {
+                Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
 
-//            LinearProbingHashTable<UsuarioConTweets, Integer> usuariosAOrdenarHash = new LinearProbingHashTable<>();
+                LinearProbingHashTable<User, Integer> usuariosReg = new LinearProbingHashTable<>();
 
-            LinearProbingHashTable<User, Integer>usuariosReg = new LinearProbingHashTable<>();
+                for (CSVRecord record : records) {
+                    String user_name = record.get("user_name");
+                    String user_verified = record.get("user_verified");
 
-            for (CSVRecord record : records) {
-                // saco las 3 columnas q quiero
-//                String tweetIDstr = record.get("");
-//                int tweetId = Integer.parseInt(tweetIDstr);
+                    User tempUser = new User(user_name,user_verified);
 
-                String user_name = record.get("user_name");
-                String user_verified = record.get("user_verified");
+                    User registeredUser = usuariosReg.getUser(tempUser);
 
-                //creo un usuario y un tweet
-                User tempUser = new User(user_name,user_verified);
-//                Tweet tempTweet = new Tweet(tweetId);
+                    if (registeredUser == null) {
+                        tempUser.setCantidadTweets(1);
+                        usuariosReg.put(tempUser, tempUser.getCantidadTweets());
+                    } else {
+                        int cantidadTweetsReal = registeredUser.getCantidadTweets();
+                        registeredUser.setCantidadTweets(cantidadTweetsReal + 1);
+                    }
 
-                //cargo todos los usuarios con su lista de tweets
-                User registeredUser = usuariosReg.getUser(tempUser);
-
-                if (registeredUser == null) {
-                    // HACER UN CONTADOR
-                    tempUser.setCantidadTweets(1);
-//                    tempUser.getListaTweets().add(tempTweet);
-                    usuariosReg.put(tempUser, tempUser.getCantidadTweets());
-                } else {
-                    int cantidadTweetsReal = registeredUser.getCantidadTweets();
-                    registeredUser.setCantidadTweets(cantidadTweetsReal + 1);
-                    // si el usuario ya existe, simplemente agrega el nuevo tweet al usuario registrado
-//                    registeredUser.getListaTweets().add(tempTweet);
                 }
 
 
-            }
-//            ----------  ----------  ORDENAMIENTO DE USUARIOS ----------  ----------
+//                -------- -------- ordenamiento de usuarios -------- --------
 
-            // ordeno los usuarios de a grupos para q no haga overflow
-            int totalUsuarios = usuariosReg.getEntries().size();
-            int lote = 20_000;  //hay que buscar el mejor tamaño de lote
-            LL<UsuarioConTweets> usuariosAOrdenar = new LL<>();
-//            MyArrayList<UsuarioConTweets> usuariosAOrdenar = new MyArrayList<>();
 
-            UsuarioConTweets usuario15 = null;
-            int sizeUsuario15 = 0;  // el tamaño de la lista del usuario 15
+                System.out.println("llegue aca");
 
-            for (int subLote = 0; subLote < totalUsuarios; subLote += lote) {
-                System.out.println("Procesando lote que comienza en el usuario " + subLote);
+                int totalUsuarios = usuariosReg.getEntries().size();
+                int lote = 25_000;
+                LL<User> usuariosAOrdenar = new LL<>();
 
-                for (int i = subLote; i < Math.min(subLote + lote, totalUsuarios); i++) {
-                    Entry<User, Integer> tempUser = usuariosReg.getEntries().get(i);
+                User usuario15 = null;
+                int sizeUsuario15 = 0;
 
-                    int cantidadTweets = tempUser.getKey().getCantidadTweets();
+                for (int subLote = 0; subLote < totalUsuarios; subLote += lote) {
+                    System.out.println("Procesando lote que comienza en el usuario " + subLote);
 
-                    // si el usuario q estoy comparando tiene size mas chico lo paso de largo
-                    if (usuario15 == null || cantidadTweets > sizeUsuario15) {
-                        // si no, creo un usuarios y lo añado
-                        String name = tempUser.getKey().getName();
-                        String verif = tempUser.getKey().getVerificado();
-                        int cantTweets = tempUser.getKey().getCantidadTweets();
+                    for (int i = subLote; i < Math.min(subLote + lote, totalUsuarios); i++) {
+                        Entry<User, Integer> tempUser = usuariosReg.getEntries().get(i);
 
-                        UsuarioConTweets tempUsuarioConTweets = new UsuarioConTweets(name,verif,cantTweets);
+                        int cantidadTweets = tempUser.getKey().getCantidadTweets();
 
-                        usuariosAOrdenar.add(tempUsuarioConTweets);
+                        if (usuario15 == null || cantidadTweets > sizeUsuario15) {
+                            User tempUsuarioConTweets = tempUser.getKey();
 
-                        // actualizo el usuario 15
-                        if (usuariosAOrdenar.size() > 15) {
-                            usuariosAOrdenar.sort();
-                            usuario15 = usuariosAOrdenar.get(14);
-                            sizeUsuario15 = usuario15.getCantidadTweetTotal();
+                            usuariosAOrdenar.add(tempUsuarioConTweets);
+
+                            if (usuariosAOrdenar.size() > 15) {
+                                usuariosAOrdenar.sort();
+                                usuario15 = usuariosAOrdenar.get(14);
+                                sizeUsuario15 = usuario15.getCantidadTweets();
+                            }
                         }
                     }
                 }
-            }
 
-            System.out.println();
-            System.out.println();
-//            ----------  ----------  MUESTRO LOS USUARIOS ----------  ----------
 
-            for (int i = 0; i < 15; i++) {
-                System.out.println(i+1 + "." +"Usuario: "+usuariosAOrdenar.get(i).getName() + " Verificado: " + usuariosAOrdenar.get(i).getIsVerified() + " Tweets: " + usuariosAOrdenar.get(i).getCantidadTweetTotal());
-            }
-            System.out.println("Cantidad total de usuarios: " +usuariosReg.getEntries().size());
+
+                 System.out.println();
+                 System.out.println();
+//                 ----------  ----------  MUESTRO LOS USUARIOS ----------  ----------
+
+                 for (int i = 0; i < 15; i++) {
+                     System.out.println(i+1 + "." +"Usuario: "+usuariosAOrdenar.get(i).getName() + " Verificado: " + usuariosAOrdenar.get(i).getVerificado() + " Tweets: " + usuariosAOrdenar.get(i).getCantidadTweets());
+                 }
+                 System.out.println("Cantidad total de usuarios: " +usuariosReg.getEntries().size());
 
 
         } catch (IOException e) {

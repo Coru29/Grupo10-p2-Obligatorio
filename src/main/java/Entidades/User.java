@@ -53,9 +53,14 @@ public class User implements Comparable<User> {
 
     @Override
     public int compareTo(User o) {
-        return this.name.compareTo(o.name);
+        return Integer.compare(this.getCantidadTweets(), o.getCantidadTweets());
     }
 
+    private String isVerified;
+
+    public void setVerificado(String verificado) {
+        this.verificado = verificado;
+    }
 
     public User(String name, String verificado) {
         this.name = name;
